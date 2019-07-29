@@ -1,0 +1,13 @@
+Producer Default Partitioner and How keys are hashed
+
+By default, your keys are hashed using the "murmur2" algorithm
+
+It is most likely preferred to not override the behaviour of the partitioner, but it is possible to do so (partitioner.class)
+
+The default formula is: (straight from kafka code)
+targetParition = Utils.abs(Utils.murmur2(record.key())) % numParitions;
+
+This means that same key will go to the same partition (we already know this), and adding partitions to a topic will
+completely alter the formula
+
+THis is why if we create a topic with (x number of partitions), we should not change the number of partitions

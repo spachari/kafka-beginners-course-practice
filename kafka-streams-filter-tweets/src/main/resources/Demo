@@ -1,0 +1,10 @@
+For this demo to work
+//create a topic
+./kafka-topics.sh --zookeeper 127.0.0.1:2181 --topic important_tweets --create --partitions 3 --replication-factor 1
+
+Run the Producer code taht we have to produce tweets
+
+Run this code that receives tweets from that topic
+
+Start the consumer to receive the filtered tweets
+./kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic important_tweets --from-beginning

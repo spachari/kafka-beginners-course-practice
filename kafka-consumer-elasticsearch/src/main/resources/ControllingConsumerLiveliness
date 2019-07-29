@@ -1,0 +1,45 @@
+Controlling Consumer Liveliness
+
+Each consumer in a consumer polls kafka broker (kafka broker) for new messages (using the poll thread)
+
+Each consumer also will send a heartbeat message to another broker (Consumer Co-ordinator broker) to check whether
+the consumers are alive or not. (using the heartbeat thread)
+
+Note the the kafka broker and the Consumer Co-ordinator broker are separate. THis allows the brokers to check whether the
+consumers are alive or not
+
+The heartbeat, when a consumer stops beating (when the Consumer Co-ordinator deos not receive heartbeat froma consumer)
+the Consumer Co-ordinator says "it looks like a consumer went down so we need to do a re-balance"
+
+To avoid issues, consumers are encouraged to process data fast and poll often, otherwise there is going to be a lot of re-balances
+
+Consumer heartbeat Thread
+
+Session.timeout.ms (default 10 seconds)
+
+    Heartbeats are sent periodically to the broker
+    If no heartbeat is sent during that period (or a heartbeat has not been received beyond this time), the consumer is considered to
+    be dead
+    If we want faster rebalances we need to set the timeout to lower
+
+Heartbeat.interval.ms (default 3 seconds)
+
+    How often to send heartbeats
+    Usually set to 1/3rd of session.timeout.ms
+
+Overall this mechanism is used to detect if a consumer is being down
+
+Consumer Poll Thread
+
+max.poll.interval.ms (default 5 minutes)
+    Maximum amount of time between the .poll() calls before declaring the consumer dead
+
+This is particularly relevant for BigData frameworks like spark in case the processing takes time
+because if your processing takes more than 5 minutes before you do another poll request, then kafka will
+think our application is down and will kill the consumer
+
+This mechanism is used to detect a data processing issue with the consumer
+
+If our data processing takes more tiem, then we may need to change the max.poll.interval.ms to larger even better
+make the processign faster and smaller.
+

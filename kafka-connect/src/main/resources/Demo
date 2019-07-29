@@ -1,0 +1,3 @@
+After following all the steps i copied the twitter jars and connect jars to the kafka/libs/ folder and it worked from there
+
+for some reason the jars from connectors could not be accessible

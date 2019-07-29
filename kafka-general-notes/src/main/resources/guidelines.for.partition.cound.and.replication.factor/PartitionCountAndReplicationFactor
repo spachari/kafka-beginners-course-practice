@@ -1,0 +1,82 @@
+Partition count and Replication Factor
+
+The two most important parameters for creating a topic
+They impact the performance and durability overall
+
+It is best to get the parameters right the first time
+    If the partitionCount increases during a topic lifecycle, you break your keys and ordering guarantees
+    If the replication factor increases during a topic life cycle, you put more pressure on your cluster
+    which can lead to performance decreases, (because all of a sudden, our brokers have to do more work)
+
+So it is super important to get these parameters right the first time. We cannot just guess and get it right.
+We can gues and test it. These are the following pointers to how we should guess
+
+Partitions Count
+
+Each partitions can handle a few throughput of a few MB/s. It can be 1 MB/s or it can be 10/MB/s (measure it for your kafka cluster setup)
+    It can depend on how our kafka cluster is setup, the quality of our network, proximity of our clients.
+    The guideline is measure it. We need to know how much a partition can handle data MB/s
+
+More partitions implies
+    1. Better parallelism, better throughput
+
+    2. Ability to run more consumers in a group to scale (in our example, whenever we used 3 partitions, only 3 consumers have been created).
+We cannot scale further than that. Even if we create a 4th consumer, it will just be inactive. If you expect high throughput, we have to
+want a lot of partitions
+
+    3. Ability to leverage more brokers if you have a large cluster. Let's say we have a large cluster of 20 brokers and we create
+a topic of 2 partitions, we are only utilizing 2 brokers working for us (maybe four, including the replication factor = 1). So we really want
+to have partitions on each broker. THis means that each broker is utilized and help us out
+
+    4. BUT, more elections to perform for zoo keeper
+    5. BUT, more files opened in Kafka
+
+Overall, kafka has eveolved a lot. So kafka can handle more partitions and zookeeper has to do less work or do it more efficiently.
+SO it is better that since, Kafka is starting to have more and more partitions handling the system it is better
+
+Guidelines for setting partition count:
+    Partitions per topic = MILLION DOLLAR QUESTION. How do we get the correct answer
+        1. (Intuition) Small cluster (< 6 brokers): 2 * # brokers. Example, if we have 5 brokers, set the partition count to be
+        10. The reasoning is that if the clients have more brokers at the time, then double their size to 12, atleast we will have enough
+        partitions to cover that.
+        So when you have a small cluster, use atleast 2 times the number of brokers for partition count.
+
+        2. (Intuition) Big cluster (> 12 brokers): 1 * # brokers.
+        3. (Intuition) Medium cluster (between 6 and 12 brokers): (1 or 2) * # brokers.
+        4. Adjust for the number of consumer you need for to run (in a group) in parallel at peak throughput. SO if you are consumers are going to
+        be very busy and CPU intense and (for example, you need 20 consumers at peak time, we definitely want atleast 20 parititons regardless)
+        of the number of how big or small our cluster is. So it is very important to know this.
+        5. Adjust for the producer throughput, (increase if super-high throughput or projected increase in the next 2 years). Overall
+        this is something we need to get right. So do not be SHY and double or triple the count of partitions (take a high number).
+        But not too high
+        6. TEST! Every kafka cluster will have different performance. THis is why it is such a vague answer. but i am trying to give a thought process
+        around this. Basically dont go for the extreme.
+        7. Dont create a topic with 1000 partitions. It will be useless. Somehting like CDS Clickstream has 100 partition counts.
+
+
+Guidelines for setting replication factor:
+    1. Should be atleast 2, usually 3, maximum 4
+    2. THe higher the replication factor:
+        Better resilience on your system (N-1 brokers can fail)
+        BUT more replication (higher latency if acks = all)
+        BUT more disk space is being used in our system (For example, 50% more if replication factor is increased from 2 to 3)
+
+Guidelines:
+    1. Set it to 3 to get started (you must have atleast 3 brokers for that).
+    2. If replication factor is an issue, get a better broker instead of RF. Always get better machines and dont compromise on RF
+    3. Never set it to 1 on production. If your broker goes down, your parititons are offline and you are done. Very important
+
+Cluster guidelines
+    1. It is pretty much accepted that a broker should not hold more than 2000 to 4000 partitions (across all topics)
+    2. Additionally, for an entire kafka cluster should ahve a maximum of 20000 partitions across all brokers
+    The reason is that in case brokers go down, the zoo keeper has to perform a lot of leader elections
+    (for each paritition and it is intense). It puts a lot of strain on the system and it impacts recovery.
+    3. If you need more partitions in your cluster, add brokers instead.
+    4. If you need more than 20,000 partitions in your cluster (it will take a lot of time to get there), follow the Netflix model
+    and create more cluster. (Netflix use 20 kafka cluster or more). So they definitely know how many partitions you can have
+
+Overall, we dont need a topic with 1000 partitions to acheive high throughput, start with a reasonable number and test the performance.
+
+
+
+

@@ -1,0 +1,44 @@
+There is a lot of load balancing happening within consumer groups.
+
+Logs are shown like this
+
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka version : 2.0.0
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka commitId : 3402a8361b734732
+[main] INFO org.apache.kafka.clients.Metadata - Cluster ID: GKu2kt_uQYajJKHp7ge36w
+[main] INFO org.apache.kafka.clients.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-1, groupId=latest] Discovered group coordinator 192.168.0.16:9092 (id: 2147483647 rack: null)
+[main] INFO org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-1, groupId=latest] Revoking previously assigned partitions []
+[main] INFO org.apache.kafka.clients.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-1, groupId=latest] (Re-)joining group
+[main] INFO org.apache.kafka.clients.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-1, groupId=latest] Successfully joined group with generation 4
+[main] INFO org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-1, groupId=latest] Setting newly assigned partitions [first_topic-0, first_topic-1, first_topic-2]
+
+
+Let's start another consumer
+
+Now the logs have changed
+[main] INFO org.apache.kafka.clients.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-1, groupId=latest] Attempt to heartbeat failed since group is rebalancing
+[main] INFO org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-1, groupId=latest] Revoking previously assigned partitions [first_topic-0, first_topic-1, first_topic-2]
+[main] INFO org.apache.kafka.clients.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-1, groupId=latest] (Re-)joining group
+[main] INFO org.apache.kafka.clients.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-1, groupId=latest] Successfully joined group with generation 5
+[main] INFO org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-1, groupId=latest] Setting newly assigned partitions [first_topic-2]
+
+The first_topic-0, first_topic-1 have been assigned to the other consumer
+
+When we run the producer, we receive only the partition 2 data
+
+[main] INFO ConsumerDemoScala$ - Key : id_2 value, Hello world 2
+[main] INFO ConsumerDemoScala$ - Partition : 2 offset : 56
+[main] INFO ConsumerDemoScala$ - Key : id_4 value, Hello world 4
+[main] INFO ConsumerDemoScala$ - Partition : 2 offset : 57
+[main] INFO ConsumerDemoScala$ - Key : id_5 value, Hello world 5
+[main] INFO ConsumerDemoScala$ - Partition : 2 offset : 58
+[main] INFO ConsumerDemoScala$ - Key : id_7 value, Hello world 7
+[main] INFO ConsumerDemoScala$ - Partition : 2 offset : 59
+[main] INFO ConsumerDemoScala$ - Key : id_9 value, Hello world 9
+[main] INFO ConsumerDemoScala$ - Partition : 2 offset : 60
+[main] INFO ConsumerDemoScala$ - Key : id_10 value, Hello world 10
+[main] INFO ConsumerDemoScala$ - Partition : 2 offset : 61
+
+So what this means is that whenever new consumers are created there is load balancing happening between the consumers to share the receiving of data
+within the same consumer group (my-fourth-application).
+
+

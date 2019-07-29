@@ -1,0 +1,125 @@
+Do you feel like we are the first person to write a way to connect to twitter and get data from it?
+
+De we feel we are the first person to find a way to send data from Kafka to PostgresSQL, ElasticSearch and MongoDB?
+
+Additionally, the bugs we have someone else have already have fixed it for us!!!
+
+Kafka connect to the rescue!! It's all about code and connectors re-use
+
+Why Kafka Connect and Streams
+
+There are only 4 common Kafka use cases:
+
+1. Source => Kafka           ProducerAPI              (Kafka Connect Source)
+2. Kafka => Kafka    Consumer API, ProducerAPI        (Kafka Streams)
+3. Kafka => Sink             ConsumerAPI              (Kafka Connect Sink)
+4. Kafka => App             ConsumerAPI
+
+1. Simplify and improve getting data in and out of kafka
+2. Simplify transforming data within Kafka without relying on external libs
+
+Why Kafka Connect:
+1. Programmers always want to import data from the same sources
+    Databases
+    JDBC
+    CouchBase
+    GoldenGate
+    SAP HANA
+    BlockChain
+    DynamoDB
+    Cassandra
+
+2. Programmers always want to store data in the same sinks
+    S3
+    ElasticSearch
+    JDBC
+    MongoDB
+    HBase
+    DynamoDB
+    Splunk
+    Twitter
+
+It is very tough to achieve fault tolerance, Idempotence, Distribution, Ordering
+
+Other programmers may have already done a great job because they have faced the same challenges
+and they might have open sourced their work
+
+Kafka Connect - High Level
+
+Source Connectors to get data from Common Data Sources
+
+Target Connectors to publish data to Common Data Sources
+
+Make it easy for non-experienced developers to quickly get their data relaiably into Kafka
+
+part of your ETL Pipeline
+
+Scaling made easy from small pipelines to company-wide pipelines
+
+Re-usable code!!!
+
+All the connectors are present in
+https://www.confluent.io/product/connectors/
+
+We are using this code to Kafka Connect to get data from twitter
+
+https://github.com/jcustenborder/kafka-connect-twitter
+
+Get the latest .tar and unzip and put the contents in your project (in a directory called connectors)
+
+To run a connect-standalone we need a connect-standalone.properties file
+
+➜  bin git:(master) ✗ ./connect-standalone.sh
+USAGE: ./connect-standalone.sh [-daemon] connect-standalone.properties
+
+go and get the connect-standalone.properties file from
+
+/Users/spachari/Desktop/Kafka/kafka_2.12-2.2.0/config/connect-standalone.properties
+
+and paste in our project root
+
+Next create a file in the root folder called twitter.properties and paste them
+
+name=TwitterSourceDemo
+tasks.max=1
+connector.class=com.github.jcustenborder.kafka.connect.twitter.TwitterSourceConnector
+
+# Set these required values
+
+process.deletes=false
+filter.keywords=ICC, Ben Stokes, Virat Kohli
+kafka.status.topic=twitter_status_connect
+kafka.delete.topic=twitter_deletes_connect
+
+twitter.oauth.consumerKey=aPrGDjfv78kbpBPOp3RZ3BfMn
+twitter.oauth.consumerSecret=beqczj0KiXhPkjIdEzaGBpO02t2hRRwXWhuYfzKaxkul5kwXHJ
+twitter.oauth.accessToken=887022661888561152-uid3YP1nOButwerJpqJu8gAuDMsiFgS
+twitter.oauth.accessTokenSecret=HOWe2jWTDZ37gfLct4LVAUZwCJHYhL688lo8QsgPmPp6G
+
+Last is create the topics named twitter_status_connect and twitter_delete_connect
+
+➜  bin git:(master) ✗ ./kafka-topics.sh --zookeeper 127.0.0.1:2181 --topic twitter_status_connect --create --partitions 3 --replication-factor 1
+WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+Created topic twitter_status_connect.
+➜  bin git:(master) ✗ ./kafka-topics.sh --zookeeper 127.0.0.1:2181 --topic twitter_deletes_connect --create --partitions 3 --replication-factor 1
+WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+Created topic twitter_deletes_connect.
+➜  bin git:(master) ✗
+
+we can see them all here
+
+➜  bin git:(master) ✗ ./kafka-topics.sh --zookeeper 127.0.0.1:2181 --list
+__consumer_offsets
+first_topic
+new_topic
+newly_topic
+second_topic
+third_topic
+twitter_deletes_connect
+twitter_status_connect
+twitter_topics
+twitter_tweets
+
+start the consumer for twitter_status_connect
+➜  bin git:(master) ✗ ./kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic twitter_status_connect --from-beginning
+

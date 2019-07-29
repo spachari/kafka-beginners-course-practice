@@ -1,0 +1,23 @@
+To get the consumer groups process and progress we can run the following command
+
+./kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group kafka-demo-elasticSearch --describe
+
+TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+twitter_tweets  3          0               581             581             -               -               -
+twitter_tweets  0          0               585             585             -               -               -
+twitter_tweets  4          0               583             583             -               -               -
+twitter_tweets  5          160             582             422             -               -               -
+twitter_tweets  2          0               587             587             -               -               -
+twitter_topics  0          0               0               0               -               -               -
+twitter_tweets  1          0               583             583             -               -               -
+
+➜  bin git:(master) ✗ ./kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group kafka-demo-elasticSearch --reset-offsets --execute -to-earliest --topic twitter_tweets
+
+TOPIC                          PARTITION  NEW-OFFSET
+twitter_tweets                 3          0
+twitter_tweets                 0          0
+twitter_tweets                 4          0
+twitter_tweets                 5          0
+twitter_tweets                 2          0
+twitter_tweets                 1          0
+

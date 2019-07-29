@@ -1,0 +1,16 @@
+Kafka Connect Workers
+StandAlone Vs Distributed mode
+
+StandAlone
+    A single process runs your connectors and tasks
+    Configuration is bundled with the process
+    Very easy to get started with, used for development and testing
+    Not fault tolerant, no Scalability, hard to monitor
+
+Distributed
+    Multiple workers run your connectors and tasks
+    Configuration is submitted via REST API
+    Easy to scale, fault tolerant (rebalancing in case a worker dies)
+    Useful for production deployment of connectors
+
+The rebalance is similar to what happens when consumers are down and other consumers pick the job

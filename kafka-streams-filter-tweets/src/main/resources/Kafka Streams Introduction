@@ -1,0 +1,48 @@
+You want to do the following tweets from the cricket_twitter_status_connect topic (the one we created for the kafka connect project)
+    Filter only tweets that have over 10 likes or replicas
+    Count the number of tweets received for each hashtag every 1 minute
+
+    Or we want to combine the two and get trending topics and hashtags in real time!
+
+With kafka Producer and Consumer, we can achieve this, but they are very low level and are not developer friendly
+
+What is Kafka Streams
+
+It is a java library for easy data processing and transformation library within kafka. It is typically used for (but not limited to)
+    Data transformation
+    Data enrichment
+    Fraud detection
+    Monitoring and Alerting
+
+(In other words this is the core engine that can replace spark streaming)
+
+It's advantages are
+    1. It is a standard java application (it can run on the cluster itself)
+    2. There is no need for a separate cluster
+    3. Highly scalable, elastic, fault tolerant
+    4. Exactly once capabilities
+    5. One record at a time (because it is a simple java program). No micro batching like spark
+    6. Works for any application size. It just scales like a consumer or producer.
+
+
+history:
+
+The API library was introduced as part of kafka 0.10 (2016) and it is fully mature as part of kafka 0.11 (2017)
+
+It is the only library at the time of writing, can leverage the new exactly once capabilities from kafka 0.11
+
+It is a serious contender to other processing frameworks such as Apache spark, flink and nifi
+
+Active library, so it is always being enhanced
+
+
+Example tweets Filtering
+
+We want to filter a tweet topics and put the results back to kafka
+
+We basically want to chain a consumer with a producer
+
+Tweets topic -------> Consumer --------> Application Logic -------> Producer ------> Filtered Topic
+
+This is extremely complicated and error prone, especially if we want to deal with concurrency and error scenarios
+

@@ -1,0 +1,50 @@
+Producer Acks - Deep dive
+There are three options
+
+1. acks=0 (no acks)
+
+1. No response is requested.
+2. If a broker goes down or we loose data, we will not know
+
+Use:
+
+Useful for data where it is potentially ok to loose messages:
+   1. Metrics collection
+   2. Log Collection
+
+
+2. acks=1 (leader acknowledgement)
+This is the default as of kafka 2.1 is acks=1
+
+1. Leader response is requested, but replication is not a guarantee (happens is the background)
+2. If an ack is not received, the producer may retry
+
+If the leader broker goes offline but replicas haven't replicated the data yet, we have a data loss.
+
+
+3. acks=all (replicas asks)
+This mode gets acknowledgement from all the replica Brokers and the leader.
+
+1. Leader + Replicas ack requested
+2. Added latency and safety (because we have requested more guarantees now)
+3. No data loss if enough replicas
+
+Necessary setting when we do not want to loose data at all
+
+acks=all should be used in conjunction with min.insync.replicas
+min.insync.replicas can be set at broker or topic level (override)
+
+min.insync.replicas=2 implies that at least 2 brokers that are ISR(including leader) must respond that they got data.
+otherwise we will get an error message
+
+So if we use replication.factor=3, min.insync.replicas=2, acks=all, you will only tolerate 1 broker going down,
+otherwise the producer will receive an exception on send. So in this setting, the topic will not be working well,
+if more than one broker is going down.
+
+In our example we have the following
+replication.factor=3
+min.insync.replicas=2
+acks=all
+
+If more than one ISR broker goes down, then the leader will send an exception NOT_ENOUGH_REPLICAS.
+It is upto the producer to retry until the ISRs come back up

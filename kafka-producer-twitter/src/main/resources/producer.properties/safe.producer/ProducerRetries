@@ -1,0 +1,25 @@
+In case of transient failures, developers are expected to handle exceptions otherwise data will be lost.
+
+Example of a transient failure
+    1. NotEnoughReplicasException
+
+There is a "retries" setting (this helps us to deal with these exceptions)
+1. Default = 0
+2. You can increase to a high number, ex Integer.MAX_VALUE. THis will help us to indefinitely retry on kafka, your message
+until it succeeds.
+
+In case of retries, by default there is a chance that messages will be sent out of order (if a batch has failed to be sent)
+Messages can be re-queued to be sent and we can have a small inversion of messages. The reason is, if we
+rely on key based ordering there can be an issue (because we dont have the same guarantee that all the keys go to the same
+partition in the same order. They will still go to the same parittion, but they may not be in the same order)
+
+
+There is a setting that can control how many produce requests can be made in parallel
+ max.in.flight.requests.per.connection.
+  1. By default it is 5 (hence there can be some sort of re-ordering)
+  2. Set it to 1 to ensure ordering (may impact throughput)
+
+This can be confusing, but if we use kafka >= 1.0.0 there is a better solution
+(if not and we have the retries to a high number and we need to ensuring ordering
+then we need to set max.in.flight.requests.per.connection = 1)
+

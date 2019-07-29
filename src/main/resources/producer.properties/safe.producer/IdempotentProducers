@@ -1,0 +1,54 @@
+Problem:
+The Producer can introduce duplicate messages in kafka due to network errors.
+
+In this regard, there are two types of request
+
+1. Good Request:
+1. Producer places a request and produces data to kafka
+2. Kafka says "yes i got the data and I am going to commit it" and sends back a acknowledgement.
+3. Producer receives the acknowledgement and starts sending the next request.
+
+2. Duplicate Requests:
+1. Producer places a request and produces data to kafka
+2. Kafka says "yes i got the data and I am going to commit it" and sends back a acknowledgement.
+3. Producer Does not receive the acknowledgement (network error) and re-sends the same request
+(because the retries > 0 and I am going to retry my request).
+4. Kafka receives the data and does the commit and sends back the acknowledgement.
+5. THe producer receives the acknowledgement and starts sending the next message.
+
+Now, from the producer perspective, it sent the data only once, because it received only one ack back.
+From the kafka perspective, it got the data twice. It did commit the data twice and it did create a duplicate.
+
+If we use kafka >= 0.11, we will not introduce duplicates when there is a network error. It introduces the concept of
+produce_request_id. With this concept we will see how the requests are handled
+
+1. Good request, same as above
+
+3. Idempotent requests
+1. Producer places a request and produces data to kafka
+2. Kafka says "yes i got the data and I am going to commit it" and sends back a acknowledgement.
+3. Producer Does not receive the acknowledgement (network error) and re-sends the same request
+(because the retries > 0 and I am going to retry my request). But this time ti sends the retry along with the
+produce_request_id. Using this produce_request_id, kafka will detect if it is duplicate request. Then it will be smart
+enough to say "I am not going to commit twice"
+4. But kafka will send an ack back saying "yes i got the message"
+
+
+Now, from the producer perspective, it sent the data only once, because it received only one ack back.
+From the kafka perspective, some de-duplication happened and the data is also committed once.
+It did NOT commit the data twice and there was some de-duplication.
+
+It is not something we have to implement, it is a mechanism that is inbuilt.
+Idempotent producers are great to guarantee a stable and safe pipeline!
+
+They come with
+1. retries = Integer.MaxValue (this means that our producer will retry indefinitely)
+2. max.in.flight.requests=1 (kafka >= 0.11 and < 1.1)
+   max.in.flight.requests=5 (kafka>= 1.1 - higher performance)
+In idempotent producer, we can keep the retries to 5 and still keep the order of the batches intact. So we can keep the
+high performance and safety
+3. acks=all
+
+
+ALl we need to do is set
+producerProps.put("enable.idempotence", "true");

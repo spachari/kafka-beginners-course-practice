@@ -1,0 +1,21 @@
+Safe Producer
+
+If we have kafka < 0.11 (producer level)
+acks=all
+    THis ensures that data i sproperly replicated before an ack is received
+
+min.insync.replicas=2 (broker/topic level)
+    Ensures two brokers in ISR at  least have the data after an ack
+
+retries=max_INT (producer level)
+    Ensures transient errors are retried indefinitely
+
+max.in.flight.requests.per.connection=1 (producer level)
+    Ensures only one request is tried at any time, preventing message re-ordering in case of retries.
+
+If we have kafka >= 0.11
+enable.idempotence=true (producer level) + min.insync.replicas=2 (broker/topic level)
+    Implies acks=all, max.in.flight.requests.per.connection=5, retries=max_INT (default)
+    while keeping ordering guarantees and improving performance!
+
+Running a "Safe Producer" might impact throughtput and latency, always use it to test your use case.

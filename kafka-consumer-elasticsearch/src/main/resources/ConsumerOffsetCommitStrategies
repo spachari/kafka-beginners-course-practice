@@ -1,0 +1,58 @@
+Consumer Offset Commit Strategies
+
+Let's understand what happens when we commit the offsets
+
+
+Points to note :
+1. At most once - Immedietely commit offset as soon as you receive data. Can cause data loss
+2. At least once - Commit only after processing is done. Can cause duplicates
+
+There are two most common patterns for committing offsets in a consumer application
+
+2 strategies (there are more)
+
+    (easy) enable.auto.commit = true & synchronous processing of batches
+    (medium) enable.auto.commit = false & manual commit of offsets
+
+
+
+ (easy) enable.auto.commit = true & synchronous processing of batches
+
+ so the pseudo code for this strategy is
+
+ while(true) {
+     List<Records> batch = consumer.poll(Duration.ofMillis(100));
+     doSomethingSynchronous(batch);
+ }
+
+In the above example, the consumer polls every 100 ms and we get a batch out of it (a list of records basically)
+and then we doSomethingSynchronous() with the batch of records (in our example we load data into elasticSearch)
+
+With auto-commit, offsets will be committed automatically for you at regular interval (auto.commot.interval.ms=5000 by default)
+everytime you call .poll()
+
+This means that the consumer will commit whatever has been done automatically every 5000 seconds.
+
+If you dont use synchronous processing, you will be in "at-most once" behaviour because offsets will be
+committed before your data is processed (as soon as it is received).
+
+(enable.auto.commit = true) it is quite risky for beginners because it will result in data loss
+
+This is why the second option is best for beginners
+
+ (medium) enable.auto.commit = false & synchronous processing of batches and then do commit
+
+we have a batch and we accumulate records and whwn the batch has enough records, we doSomethingSynchronous with the batch
+and then we commitSync() the offsets.
+
+ while(true) {
+    batch += consumer.poll(Duration.ofMillis(100));
+    if isReady(batch) {
+        doSomethingSynchronous(batch);
+        consumer.commitSync();
+    }
+ }
+
+You control when you commit offsets and what's the condition for committing them.
+Example: accumulating records into a buffer and then flushing the buffer to a database + committing offsets then.
+

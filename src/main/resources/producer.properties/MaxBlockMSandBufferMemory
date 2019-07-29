@@ -1,0 +1,31 @@
+Max.block.ms and buffer.memory
+
+If the producer produces faster than the broker can take, the records will be buffered in memory.
+An exception happens
+
+This happens when
+    The broker cannot ingest data fast enough
+    Maybe the broker is overloaded
+    We have not sized the broker properly
+    There is a peak of usage of our applications
+
+By default, each producer has a buffer memory of
+buffer.memory=32MB: the size of the send buffer
+
+That buffer will fill up over time and fill back down when the throughput to the broker increases
+(when producer is able to send data to the broker in a faster way)
+
+if the buffer is full (all 32MB is used), then the .send() method will start to block (wont return right away)
+THis means that the code wont produce more data. It will just wait.
+
+This wait is wait is set to
+
+max.block.ms=60000; the time the send() will block until throwing an exception.
+
+Exceptions are basically thrown when
+    The producer has basically filled up it's buffer
+    The broker is not accepting any new data
+    60 seconds has elapsed
+
+If you hit an exception hit that usually means your brokers are down or overloaded as they cannot respond to requests
+The producers will go down as well until the brokers are recovered

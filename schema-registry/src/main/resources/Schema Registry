@@ -1,0 +1,65 @@
+Why does kafka need schema registry
+
+Kafka takes bytes as input and publishes them
+It does not do any data verification
+
+So what happens in the following scenarios?
+
+What if the producers send bad data?
+What if a field gets re-named?
+What if the data format get changed from one day to another?
+
+The Consumers Break!!! and we dont want that
+
+We want data to be self-describable
+We need to be able to evolve data without breaking downstream consumers
+
+We need schemas... and a schema registry
+
+There are two ways of doing this
+
+1. What if Kafka Brokers were verifying the data that they receive?
+
+It would break what made Kafka so good.
+    Kafka doesn't parse or even read your data (no CPU usage)
+    Kafka takes bytes as an input without even loading them into memory (it is called zero copy)
+    Kafka distributes bytes
+    As for as Kafka is concerned, it does not even care if your data is String or integer or a json document.
+    Kafka just gets data and sends data and does not even know anything about the data
+
+The need for Schema Registry
+    The Schema Registry has to be separate components
+    Producers and Consumers need to be able to talk to it
+    The Schema registry must be able to reject bad data
+
+    A common data format must be agreed upon
+        It need to support schemas
+        It needs to support evolution
+        It needs to be light weight
+
+    Enter the ... Confluent Schema Registry
+    And Apache Avro is the data format
+
+Purpose of Schema Registry
+    Store and retrieve schemas for Producers and Consumers
+    Enforce backward/Forward and full compatibility on topics
+    Decrease the size of the payload of data sent to kafka (the schema should not be a part of it)
+
+
+How is works is
+    From the producer side, the data (AVRO content) is sent to Kafka and the Schema is sent to Schema registry once
+    From the consumer side, the data is received from Kafka and the schema is received from the schema registry once
+
+This is super efficient because the schema being sent is done once and the schema being received is also once
+
+Overall the data flows through kafka and the schema registry is your safe guard against bad data (or breaking schemas).
+
+Utilizing Schema Registry has a lot of benefits
+But it implies that we need
+    Set it up well
+    Make sure it is highly available
+    partially change the producer and consumer code
+    We cannot use json anymore its Apache Avro
+
+it does have a learning curve, but it has a format that can be used
+The schema registry is free and open sourced, created by kafka (Confluent)

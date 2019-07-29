@@ -1,0 +1,11 @@
+Kafka Connect cluster has multiple loaded Connectors
+    Each connector is a re-usable piece of java code
+    many connectors exist in the open source world, so leverage them
+
+Connectors + User Configurations => Tasks
+    A task is linked to a connector configuration
+    A job configuration may spawn multiple tasks
+
+Tasks are executed by kafka connect workers (servers)
+    A worker is a single java process
+    A worker can be standalone or in a cluster

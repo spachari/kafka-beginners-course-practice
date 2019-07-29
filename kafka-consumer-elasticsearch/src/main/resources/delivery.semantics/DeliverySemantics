@@ -1,0 +1,23 @@
+Delivery Semantics
+
+Note: Reading is done in batch (set of 5 or 6 messages)
+
+1. At most once
+Offsets are committed as soon as the message batch is received. If the processing goes wrong, the message will be lost.
+In our example, if we cannot load the data into elastic search, the records will be lost.
+Another example is, if the consumer goes down and comes back up, it will process from the last offset.
+
+2. At least once - Incase of a restart there is a chance that we can read the message again
+Offsets are committed after the message is processed. If the processing goes wrong, the message will be read again.
+THis can result in duplicate processing of messages. Make sure your processing is idempotent
+(i.e processing again wont impact your systems)
+
+In our example, when we restart the consumer, it might re-process a few records (since it starts from the last commit)
+
+Exactly Once: Can be achieved for kafka => Kafka workflows using Kafka Streams API. For Kafka => Sink workflows, use
+idempotent consumers.
+
+Bottom line: For most applications we should use "at least once" processing and ensure our transformations/processing are idempotent
+(de-duplicate records)
+
+The default is "at least once"
