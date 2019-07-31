@@ -1,0 +1,11 @@
+Kafka Cluster Setup Gotchas
+
+    1. It is not easy to setup a kafka cluster
+    2. You want to isolate the zoo-keeper and Broker on separate servers
+    3. Monitoring needs to be implemented
+    4. Operations need to be mastered.
+    5. You really need a good kafka Admin.
+
+    Alternative is, there are many different "Kafka as service" offerings on the web
+    No operational burdens (Updates, monitoring, setup)
+

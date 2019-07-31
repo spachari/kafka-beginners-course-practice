@@ -1,0 +1,8 @@
+It is common to have "generic" connectors or solutions to off-load data from Kafka to HDFS, Amazon s3 and Elastic Search for example
+
+It is also common to have Kafka serve as a "speed layer" (used by Spark Streaming, Storm and flink) for real time applications to create
+visits, alerts and Apps, while having a "slow layer" (Kafka Connect) to store data in HDFS, S# and Elastic Search which helps with data
+ingestions into stores for alter analytics
+
+Another primary application for Kafka is to collect application logs and application metrics. All applications can send logs and metrics
+to Kafka to applicationLog topic and metircLog topic. Then these logs can be sent to Splunk using Kafka Connect for further analysis

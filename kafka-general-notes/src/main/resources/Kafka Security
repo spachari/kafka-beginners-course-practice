@@ -1,0 +1,60 @@
+The need for encryption, authentication and authorization in Kafka
+    When you start having a Kafka cluster any client can access your kafka cluster (no authentication)
+    Clients can publich/consumer any topic data (no authentication)
+    All data being sent is fully visible on the network (no encryption)
+
+    Someone could intercept the data being sent
+    Someone could publish bad data/steal data
+    Someone could delete topics
+
+    All these are reasons push for more security and an authentication model
+
+Encryption in kafka
+    Encryption in Kafka ensures taht the data exchanged between clients and brokers is secret to routers on the way
+    THis is similar to an https website. The information tha we and google (username and passowrd) is secret between
+    you and google and no one on the way can get that information.
+
+    The idea is in-flight the data is safe. Producer encrypt the data and send it. Brokers can decrypt and store it in disk
+
+Authentication in Kafka
+    Authentication in Kafka ensures that only clients that can prove their identity can connect to our kafka cluster
+    This is similar concept to a login (username/password) in google
+
+    Authentication in Kafka can take a few forms
+        SSL Authentication: cleints authenticate to Kafka using SSL certificates
+        SASL Authentication:
+            PLAIN: cleints authenticate using username/password (weak - easy to setup)
+            Kerberos: such as Microsoft Active Directory (strong - hard to setup)
+            SCRAM: username / password (strong - medium to setup)
+
+Authorisation in Kafka
+    Once a client is authenticated, Kafka can verify it's identity
+
+    It still needs to be combined with authorisation so that Kafka knows that
+        User alice can view topic finance
+        User bob cannot view topic trucks
+
+    This guarantees that an application does not wirte to topic it is not supposed to or read from topics that it should not read from
+
+    ACL (Access Control Lists) have to be maintained by administration and onboard new users
+
+
+Putting it all together
+You can mix
+    Encryption
+    Authentication
+    Authorisation
+
+This allows your Kafka clients to:
+    Communicate securely to Kafka
+    Clients would authenticate against Kafka
+    Kafka can authorise clients to read/write to topics
+
+
+Kafka sercutity is fairly new (0.10)
+
+Kafka secutiry improves over time and becomes more flexible (easier to setup as time goes)
+
+Currently it is hard to setup Security
+
+Best support for kafka Security for applications is with java (but other languages are providing support as well)
