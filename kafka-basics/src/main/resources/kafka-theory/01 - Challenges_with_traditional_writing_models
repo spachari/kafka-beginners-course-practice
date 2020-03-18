@@ -1,0 +1,52 @@
+Problems organisations face with previous architecture
+
+If we have 4 source systems and 6 target systems, we will write 24 integrations
+
+Each integrations comes with it's own difficulties
+    Protocol - how the data is transported
+    Data format - How the data is parsed (Binary, csv, json, Avro )
+    Data schema and evolution - How the data is shaped and schema is changed
+
+Each source system may have increased load from the connections
+
+
+How do we solve this?
+    THis is where Apache Kafka comes in. It allows us to decouple our data streams and our systems. Now our source systems will have
+their data in Apache Kafka. While our target systems will source our data straight from Apache Kafka. This decoupling is what is so
+good about Apache Kafka and what it enable sis really really nice.
+
+
+What can we have in Kafka?
+    We can have any data stream we can think about.
+
+For example: it could be web-site events, pricing data, financial transaction, user interactions and many more.
+Additionally once the data is in kafka, we may want to put it in any system we like such as database, analytic systems, our schema
+system and audit.
+
+
+Why Apache Kafka
+    It is created by Linkedin. It is an open source project mainly maintained by confluent
+    Distributed, resilient architecture, fault tolerant
+
+    Horizontal scalability
+        Can scale to 100s of brokers
+        Can scale to millions of messages per second
+
+    High performance (latency of less than 10 ms) - al time
+    Used by 2000+ firms, 35% of Fortune 500
+
+
+
+Use cases for Apache kafka
+    Messaging system
+    Activity Tracking
+    Gather metrics from different locations
+    Application logs gathering
+    Stream processing (with the kafka Streams API or Spark for example)
+    De-coupling of system dependencies
+    Integration with Spark, Storm, Hadoop and many other Big Data technologies
+
+Companies use Kafka to make real time recommendations, real time decisions and real time insights to users.
+
+In this kafka is only used as a transportation mechanism. We still need to write our web applications to make things work, but kafka is
+really good at making data move at really fast rate at our company

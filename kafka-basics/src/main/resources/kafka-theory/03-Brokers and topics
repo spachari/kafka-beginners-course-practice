@@ -1,0 +1,10 @@
+Brokers
+So what does hold the topic and partitions? A broker does
+A kafka cluster comprises of multiple brokers. Each broker is basically a server.
+    Each broker is identified by an ID
+    Each broker contains certain topic partitions (but not all data)
+    After connecting to any broker (called a bootstrap broker), we are connecting to the entire cluster
+
+Brokers and Topics:
+    When we create a topic, kafka will distribute it's partitions across multiple brokers
+

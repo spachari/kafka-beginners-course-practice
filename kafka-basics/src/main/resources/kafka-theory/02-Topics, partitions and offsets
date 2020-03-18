@@ -1,0 +1,33 @@
+Topics
+A particular stream of data. It is the base of everything. It represents a particular stream of data.
+
+    Similar to a table in a database (without any constraints)
+    We can have as many Topics as we want
+    A topic is identified by it's name (usually we name it by the stream of data)
+
+Topic are split into partitions (we need to mention the number of partitions needed in a topic and we can change this later on )
+    Each partition is ordered
+    Each message within a partition gets an incremental id, called offset
+
+
+Note:
+    Each partition will not have the same number of messages
+    An offset 0 does notmean anything on it's own. It is usually kafka-topic(payment)-partition(partition0)-offset(0)
+
+Topic example
+    Say you have a fleet of trucks, each truck reports its GPS position to kafka
+    You can have a topic truck_gps that contains the position of all trucks
+    Each truck will send a message to Kafka every 20 seconds , each message will contain the truck id and truck location (latitude and longitude)
+    We choose to create that topic with 20 partitions (arbitrary number)
+
+    We may need it to create a location dashboard to track all our trucks or to create a notification service
+
+Notes:
+    Offset will have a meaning for a specific partition
+        Offset 3 in partition1 will not have the the same data as Offset 3 in partition2
+    Order is only guaranteed within a partition (not across partitions)
+    Data in Kafka is only kept for a limited amount of time (default is one week)
+    Once a data is written to a partition it cannot be changed (immutability)
+    Data is assigned randomly to a partition unless a key is provided
+
+

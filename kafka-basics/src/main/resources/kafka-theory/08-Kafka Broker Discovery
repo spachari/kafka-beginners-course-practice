@@ -1,0 +1,16 @@
+Kafka Broker Discovery
+    We mentioned that the Producer  can automatically figure out which broker they can send data to and Consumer can
+    figure out which Broker to receive data from etc. THis is how it works
+
+    Every Kafka broker is also called a "bootstrap server"
+    That means that you will connect to only one broker and you will be connected to the entire Kafka cluster
+    Each broker knows all about brokers, topics and partitions (metadata) (it does not hold the data, but it knows about which broker holds which topic at which partition)
+
+
+So the way a client starts to connect a Broker is
+    1. Connection + Metadata request (Client will connect to any broker and request the metadata (which partition lie in which broker))
+    2. THe Broker will send a list of all Brokers and it's partitions
+    3. Client will connect to the necessary broker
+
+This is already implemented, not for us to worry about. But it is nice to know. When we have 100 brokers, we just need to connect to one broker and
+the client is then smart enough to figure out which broker(s) to connect and get data from.

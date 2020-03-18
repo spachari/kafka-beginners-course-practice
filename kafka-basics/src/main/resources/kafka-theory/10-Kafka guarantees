@@ -1,0 +1,10 @@
+Kafka guarantees
+    Messages are appended to a topic-partitions in the order they are sent
+    Consumers read messages in the order stored in a topic partition
+    With a replication factor of N, producers and consumers can tolerate of up to N-1 brokers being down
+    This is why  replication factor of 3 is a good idea:
+        Allows for ne broker to be taken down or maintenance
+        Allows for another broker to be taken down unexpectedly
+
+    As long as the number of partitions remain constant for a topic (no new partitions added), we can be sure that the same key will go to the same partition
+

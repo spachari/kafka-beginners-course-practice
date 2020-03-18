@@ -7,7 +7,7 @@ Offsets are committed as soon as the message batch is received. If the processin
 In our example, if we cannot load the data into elastic search, the records will be lost.
 Another example is, if the consumer goes down and comes back up, it will process from the last offset.
 
-2. At least once - Incase of a restart there is a chance that we can read the message again
+2. At least once - In case of a restart there is a chance that we can read the message again
 Offsets are committed after the message is processed. If the processing goes wrong, the message will be read again.
 THis can result in duplicate processing of messages. Make sure your processing is idempotent
 (i.e processing again wont impact your systems)

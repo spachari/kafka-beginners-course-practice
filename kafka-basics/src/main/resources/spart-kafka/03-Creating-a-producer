@@ -1,0 +1,10 @@
+There was an issue starting kafka in my local. SO what I did was add these two lines to the server.properties file
+
+port = 9092
+advertised.host.name = localhost
+
+then run kafka-console-producer via this
+
+➜  kafka_2.12-2.4.0 sh bin/kafka-console-producer.sh --broker-list 127.0.0.1:9092 --topic first_topic
+>
+

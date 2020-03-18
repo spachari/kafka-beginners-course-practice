@@ -1,0 +1,7 @@
+cd kafka_2.12-2.4.0
+
+1. Start zoo keeper
+./zookeeper-server-start.sh config/zookeeper.properties
+
+2. Start kafka server
+./bin/kafka-server-start.sh config/server.properties

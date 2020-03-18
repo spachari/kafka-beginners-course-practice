@@ -1,0 +1,14 @@
+Topic replication factor
+Topics are usually replicated across multiple brokers. This way if a broker is down, another broker can serve the data
+    Topics should have a replication factor > 1 (usually between 2 and 3) 3 is the gold standard. This means we have a true copy of this data in another Broker
+
+Concept of a Leader in Partition
+    At any time only one Broker can be a leader for a given partition
+    Only that leader can and serve data for that partition
+    The other brokers will synchronize data
+    Therefore each partition has one leader nd multiple ISR (in sync replicas)
+
+Who decides who can be the leader and assign a few ISRs - zoo keeper.
+What happens when a broker goes down. There will be an election to decide which broker will be the next leader and it will take over.
+When the leader comes back up it will take over from the ISR (all handled behind the scenes)
+

@@ -1,0 +1,25 @@
+Consumer Offsets
+    kafka stores the offsets at which a consumer group has been reading. (Think of it as checkpointing or bookingmarking)
+    These offsets committed live in a kafka topic named __consumer_offsets
+    When a consumer in a consumer group has processed data received from Kafka, it should be committing the offsets
+    (Committing the offsets is the act of writing to the topic named __consumer_offsets )
+    If a consumer dies , it will be ble to read back from wher eit left off (thanks to the committed consumer offsets)
+
+Delivery Semantics for consumers
+    Consumers can choose when to commit offsets.
+    There are three delivery semantics
+
+    At most once (nor preffered)
+        Offsets are committed as soon as message is received
+        If the process goes wrong, the messages will be lost (f wont be read again)
+
+    At least once (preffered)
+        offsets are committed after the message is processed
+        If processing goes wrong, be message will be read again
+        The draw back of this is, we can get dupicate messages (like in stateful computation checkpointing where data is already written),
+        we will need to be able to make sure processing is idempotent (processing again so that it wont impact our systems)
+
+    Exactly once
+        Can only be achieved when using Kafka => kafka workflows sing Kafka Streams API
+        For Kafka => External system workflows (Spark streaming), we use idempotent consumer
+

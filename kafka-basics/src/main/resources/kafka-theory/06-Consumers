@@ -1,0 +1,17 @@
+Consumers
+    Consumers read data from topics (identified by name)
+    Consumers know which broker to read from (they are programmed to read automatically)
+    In case of broker failure, consumers know how to recover from a broker failure
+    Data is read in order within each partitions
+    (in order of offsets 0,1,2,3,4,5,6,7,8,9.... the consumer will not see offset 2 before it reads from offset 3)
+    There is no guarantee of order between multiple partitions. Consumer reads data between partitions in parallel (each in order though). This is why specifying a key is immportant
+
+
+Consumer Groups (an example would be a spark streaming application)
+    Consumers read data in consumer groups
+    Each consumer within a group reads from exclusive partitions
+    If we have more consumers an partitions, then some of them will become inactive (this is not bad. it is better to have consumers sitting around doing nothing, because
+    they will be standby. If any active consumer dies because of node shutdown, the standby consumer can take over)
+    If we want to have a high number of consumers we have to have a high number of partitions. THis is a decision we have to make
+
+Note: Consumers will automatically se a ConsumerCoordinator and a GroupCOordinator to assign consumers to a partition

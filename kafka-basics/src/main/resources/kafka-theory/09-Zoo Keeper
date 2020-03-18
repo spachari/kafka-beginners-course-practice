@@ -1,0 +1,15 @@
+Zookeepers
+    Zookeeper manages a list of brokers (keeps a list of them)
+    Zookeeper helps in performing leader election for partitions
+    Zookeeper will send notifications to kafka n case of changes
+        new topic created
+        broker dies
+        broker comes up
+        delete topics
+
+    kafka cannot work without zookeeper
+    Zookeeper by design operates with odd number of rules (3,5,7). this means we will have 3,5, or 7 zoo keepers in production
+    Zookeeper also has a leader (handle writes from the brokers) the rest of the servers are followers (handle reads) (Producers and consumers dont write to zoo keeper. They write to kafka.
+    Kafka manages it's own metadata in zoo keeper)
+
+    Zookeeper does not store consumer offsets. They are stored in a kafka topic. We will not be dealing with Kafka directly, we will be dealing with Kafka brokers
