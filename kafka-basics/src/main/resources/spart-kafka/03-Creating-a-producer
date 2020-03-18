@@ -1,3 +1,7 @@
+to find out the list of ports in the mac
+
+lsof -t -i
+
 There was an issue starting kafka in my local. SO what I did was add these two lines to the server.properties file
 
 port = 9092
